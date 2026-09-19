@@ -1,0 +1,18 @@
+# Local agent/session state
+.remember/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local preview and environment files
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example

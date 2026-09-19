@@ -1,0 +1,152 @@
+[
+  {
+    "id": "firecracker-chicken",
+    "name": "Firecracker Chicken",
+    "price": 279,
+    "description": "Garlic rice, chicken, sesame slaw, cucumber and hot-sweet firecracker sauce.",
+    "image": "https://images.pexels.com/photos/31264132/pexels-photo-31264132.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "category": "bowls",
+    "vegetarian": false,
+    "spicy": true
+  },
+  {
+    "id": "the-duo-box",
+    "name": "The Duo Box",
+    "price": 699,
+    "description": "Firecracker Chicken, Teriyaki Crunch, chilli garlic fries and two yuzu lime coolers.",
+    "image": "https://images.pexels.com/photos/6249398/pexels-photo-6249398.jpeg?auto=compress&cs=tinysrgb&w=1000",
+    "category": "two",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "green-duo",
+    "name": "Green Duo",
+    "price": 649,
+    "description": "Paneer Pepper, Garden Miso, sesame fries and two yuzu lime coolers.",
+    "image": "https://images.pexels.com/photos/18469775/pexels-photo-18469775.jpeg?auto=compress&cs=tinysrgb&w=1000",
+    "category": "two",
+    "vegetarian": true,
+    "spicy": false
+  },
+  {
+    "id": "teriyaki-crunch",
+    "name": "Teriyaki Crunch",
+    "price": 269,
+    "description": "Chicken, sticky teriyaki, sesame greens, crispy garlic.",
+    "image": "https://images.pexels.com/photos/8956891/pexels-photo-8956891.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "bowls",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "korean-chilli",
+    "name": "Korean Chilli",
+    "price": 299,
+    "description": "Chilli chicken, rice, cucumber, carrot, egg and sesame.",
+    "image": "https://images.pexels.com/photos/37284050/pexels-photo-37284050.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "bowls",
+    "vegetarian": false,
+    "spicy": true
+  },
+  {
+    "id": "crispy-bird",
+    "name": "Crispy Bird",
+    "price": 289,
+    "description": "Crispy chicken, steamed rice, pickles and smoky mayo.",
+    "image": "https://images.pexels.com/photos/7181163/pexels-photo-7181163.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "bowls",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "pepper-wok",
+    "name": "Pepper Wok",
+    "price": 279,
+    "description": "Pepper chicken fried rice, peppers, scallions and chilli oil.",
+    "image": "https://images.pexels.com/photos/12052350/pexels-photo-12052350.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "bowls",
+    "vegetarian": false,
+    "spicy": true
+  },
+  {
+    "id": "garden-miso",
+    "name": "Garden Miso",
+    "price": 239,
+    "description": "Miso vegetables, edamame, cabbage, carrot and sesame.",
+    "image": "https://images.pexels.com/photos/9029283/pexels-photo-9029283.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "veg",
+    "vegetarian": true,
+    "spicy": false
+  },
+  {
+    "id": "paneer-pepper",
+    "name": "Paneer Pepper",
+    "price": 249,
+    "description": "Seared paneer, peppers, onion, herb rice and smoky chilli.",
+    "image": "https://images.pexels.com/photos/12737917/pexels-photo-12737917.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "veg",
+    "vegetarian": true,
+    "spicy": true
+  },
+  {
+    "id": "rajma-comfort",
+    "name": "Rajma Comfort",
+    "price": 219,
+    "description": "Slow-cooked rajma, rice, onion pickle, herbs and crisp papad.",
+    "image": "https://images.pexels.com/photos/15362105/pexels-photo-15362105.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "veg",
+    "vegetarian": true,
+    "spicy": false
+  },
+  {
+    "id": "chilli-garlic-fries",
+    "name": "Chilli Garlic Fries",
+    "price": 139,
+    "description": "Chilli dust, herbs, roasted garlic mayo.",
+    "image": "https://images.pexels.com/photos/1583891/pexels-photo-1583891.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "sides",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "sesame-fries",
+    "name": "Sesame Fries",
+    "price": 129,
+    "description": "Sea salt, sesame seasoning and chilli dip.",
+    "image": "https://images.pexels.com/photos/5836999/pexels-photo-5836999.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "sides",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "yuzu-lime-cooler",
+    "name": "Yuzu Lime Cooler",
+    "price": 119,
+    "description": "Citrus, lime, mint, soda and crushed ice.",
+    "image": "https://images.pexels.com/photos/6542761/pexels-photo-6542761.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "drinks",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "peach-iced-tea",
+    "name": "Peach Iced Tea",
+    "price": 109,
+    "description": "Black tea, peach, citrus and lots of ice.",
+    "image": "https://images.pexels.com/photos/4523905/pexels-photo-4523905.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "drinks",
+    "vegetarian": false,
+    "spicy": false
+  },
+  {
+    "id": "warm-brownie-bowl",
+    "name": "Warm Brownie Bowl",
+    "price": 169,
+    "description": "Chocolate brownie, vanilla ice cream and sesame caramel.",
+    "image": "https://images.pexels.com/photos/32835311/pexels-photo-32835311.jpeg?auto=compress&cs=tinysrgb&w=900",
+    "category": "dessert",
+    "vegetarian": false,
+    "spicy": false
+  }
+]
