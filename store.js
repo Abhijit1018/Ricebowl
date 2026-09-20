@@ -13,6 +13,8 @@
   const OUTLET = CONFIG.outlet || 'rice-bowl';
   const CUR = CONFIG.currency || '₹';
   const BASKET_KEY = 'rice-bowl-basket-v1';
+  // The browsing pages keep a simple {dish-slug: qty} bag; the order page carries it over once.
+  const LEGACY_BAG_KEY = 'rice-bowl-bag-v1';
   const LAST_ORDER_KEY = 'rice-bowl-last-order';
 
   const money = (n) => `${CUR}${Number(n || 0).toFixed(2)}`;
@@ -68,6 +70,33 @@
   function setQty(key, qty) {
     const lines = readBasket().map((l) => (l.key === key ? { ...l, qty } : l)).filter((l) => l.qty > 0);
     writeBasket(lines);
+  }
+
+  /**
+   * Move whatever is in the browsing bag into the live basket, once, so nobody has to pick
+   * their dishes a second time. Bag ids are slugs of the dish name, which is how they match
+   * the live menu.
+   */
+  function carryBrowsingBag(products) {
+    let stored = null;
+    try { stored = JSON.parse(localStorage.getItem(LEGACY_BAG_KEY) || 'null'); } catch { return null; }
+    if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return null;
+    const entries = Object.entries(stored).filter(([, qty]) => Number.isInteger(qty) && qty > 0);
+    try { localStorage.removeItem(LEGACY_BAG_KEY); } catch { /* private mode */ }
+    if (entries.length === 0) return null;
+
+    const byName = new Map(products.map((p) => [norm(p.name), p]));
+    let carried = 0;
+    const missed = [];
+    entries.forEach(([id, qty]) => {
+      const product = byName.get(norm(id));
+      if (!product || product.soldOut) { missed.push(String(id).replace(/-/g, ' ')); return; }
+      addToBasket(product, [], Math.min(qty, 99));
+      carried += qty;
+    });
+    // The bag badge in the site header reads the old key, so clear it too.
+    els('.bag-count:not([data-basket-count])').forEach((n) => { n.textContent = '0'; });
+    return { carried, missed };
   }
 
   const basketCount = () => readBasket().reduce((n, l) => n + l.qty, 0);
@@ -154,6 +183,12 @@
 
     const products = menu.categories.flatMap((c) => c.products);
     const findProduct = (id) => products.find((p) => p.id === id);
+
+    // Whatever they picked while browsing is already their order — don't make them choose again.
+    const carried = carryBrowsingBag(products);
+
+    // This page has its own basket, so the site's bag button would be a second, stale one.
+    els('.bag-button, .order-cta').forEach((n) => { n.hidden = true; });
 
     menuHost.innerHTML = menu.categories.map((cat) => `
       <section class="order-group" id="cat-${cat.id}">
@@ -267,6 +302,14 @@
     });
     renderBasket();
 
+    if (carried && (carried.carried || carried.missed.length)) {
+      const said = [];
+      if (carried.carried) said.push(`${carried.carried} ${carried.carried === 1 ? 'item' : 'items'} moved over from your bag`);
+      if (carried.missed.length) said.push(`${carried.missed.join(', ')} is not available today`);
+      basketHost.insertAdjacentHTML('beforebegin', `<p class="carry-note">${escapeHtml(said.join(' · '))}.</p>`);
+      flash(said[0] + '.');
+    }
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const submit = el('[data-submit]', root);
@@ -340,6 +383,9 @@
     const root = el('[data-track-page]');
     if (!root || root.dataset.ready) return;
     root.dataset.ready = '1';
+
+    // The bag belongs to the browsing pages; on a live order it would only be confusing.
+    els('.bag-button').forEach((n) => { n.hidden = true; });
 
     const params = new URLSearchParams(location.search);
     let token = params.get('token');

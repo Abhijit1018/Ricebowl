@@ -56,6 +56,7 @@
 .order-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
 .order-card h2{font-family:inherit;font-size:16px;font-weight:700;letter-spacing:0;margin-bottom:14px}
 .basket-empty{color:var(--muted);font-size:14px}
+.carry-note{margin:0 0 10px;padding:8px 10px;border-radius:8px;background:rgba(185,56,40,.08);color:var(--ink,#241f1c);font-size:13px;line-height:1.4}
 .basket-lines{list-style:none;margin:0;padding:0;display:grid;gap:14px}
 .basket-lines li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;font-size:14px}
 .basket-lines strong{font-size:14px}
@@ -148,11 +149,11 @@
 <a class="skip" href="#main">Skip to content</a>
     <header class="site-header"><div class="shell header-inner">
       <a class="brand" href="index-standalone.html" aria-label="Rice Bowl home"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 23h38c-1 12-8 19-19 19S6 35 5 23Z" fill="currentColor"/><path d="M3 23h42M18 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M15 16c-6-5 6-6 0-11M24 16c-6-5 6-6 0-11M33 16c-6-5 6-6 0-11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span>rice bowl</span></a>
-      <nav class="desktop-nav" aria-label="Main navigation"><a href="#top" data-nav="home" aria-current=page>Home</a><a href="menu-standalone.html" data-nav="menu">The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="#story" data-nav="story">Our food</a><a href="#faq" data-nav="faq">Good to know</a></nav>
+      <nav class="desktop-nav" aria-label="Main navigation"><a href="#top" data-nav="home" aria-current="page">Home</a><a href="menu-standalone.html" data-nav="menu">The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="#story" data-nav="story">Our food</a><a href="#faq" data-nav="faq">Good to know</a></nav>
       <a class="btn small order-cta" href="order-standalone.html" data-order-cta>Order online</a>
       <button class="bag-button" type="button" data-open-bag aria-haspopup="dialog">Bag <span class="bag-count">0</span></button>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Toggle navigation">Menu</button>
-      <nav class="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" hidden><a href="#top" data-nav="home" aria-current=page>Home</a><a href="menu-standalone.html" data-nav="menu">The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="#story" data-nav="story">Our food</a><a href="#faq" data-nav="faq">Good to know</a></nav>
+      <nav class="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" hidden><a href="#top" data-nav="home" aria-current="page">Home</a><a href="menu-standalone.html" data-nav="menu">The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="#story" data-nav="story">Our food</a><a href="#faq" data-nav="faq">Good to know</a></nav>
     </div></header><noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
 <main id="main">
   <section class="hero shell" aria-labelledby="hero-title">
@@ -420,7 +421,9 @@
     document.querySelector('.bag-empty').hidden = count > 0;
     document.querySelector('.bag-footer').hidden = count === 0;
     document.querySelector('.saved-summary').hidden = true;
-    document.querySelector('.bag-notice').textContent = `Online ordering is not available yet. This bag is a ${storageAvailable ? 'saved' : 'temporary'} list, not a placed order.`;
+    document.querySelector('.bag-notice').textContent = storageAvailable
+      ? 'Prices and availability come live from the kitchen. Continue on the order page to place it — your picks come with you.'
+      : 'This browser is not saving your bag, so finish on the order page in this tab.';
     document.querySelectorAll('[data-add]').forEach(button => {
       const item = products.get(button.dataset.add);
       const qty = bag.get(item.id) || 0;
