@@ -106,7 +106,7 @@
 .order-cta.is-closed{opacity:.6;pointer-events:none}
 @media(max-width:1000px){.order-shell{grid-template-columns:1fr;gap:26px}.order-side{position:static}}
 @media(max-width:640px){.order-head h1{font-size:56px}.order-item{grid-template-columns:96px minmax(0,1fr);gap:12px}.order-item img{width:96px;height:96px}.order-nav{top:70px}.order-group{scroll-margin-top:150px}.track-card{padding:22px}.track-card h1{font-size:36px}.field-row{grid-template-columns:1fr}}
-</style></head><body id="top">
+</style></head><body id="top" data-page="order">
 <div class="page-loader" id="page-loader" hidden>
       <div class="loader-lockup"><svg class="loader-bowl" viewBox="0 0 220 190" fill="none" aria-hidden="true">
         <ellipse class="bowl-shadow" cx="110" cy="166" rx="62" ry="7" fill="#102736" opacity=".3"/>
@@ -165,7 +165,7 @@
   <div class="order-shell">
     <div data-order-menu><p class="muted">Loading today’s menu…</p></div>
     <aside class="order-side">
-      <div class="order-card">
+      <div class="order-card" id="your-order">
         <h2>Your order <span class="bag-count" data-basket-count>0</span></h2>
         <div data-order-basket></div>
       </div>
@@ -290,14 +290,16 @@
 
   // Keep desktop and mobile navigation aligned with the section being viewed.
   const primaryLinks = [...document.querySelectorAll('[data-nav]')];
+  const thisPage = document.body.dataset.page || (document.body.classList.contains('menu-page') ? 'menu' : 'home');
   function markNavigation(id) {
     primaryLinks.forEach(link => {
-      if(link.dataset.nav === id) link.setAttribute('aria-current', ['home', 'menu'].includes(id) ? 'page' : 'location');
+      if(link.dataset.nav === id) link.setAttribute('aria-current', id === thisPage ? 'page' : 'location');
       else link.removeAttribute('aria-current');
     });
   }
-  if(document.body.classList.contains('menu-page')) {
-    markNavigation('menu');
+  // Only the home page scrolls through sections; elsewhere the page you are on stays marked.
+  if(thisPage !== 'home') {
+    markNavigation(thisPage);
   } else {
     const sections = ['story', 'faq'].map(id => document.getElementById(id));
     let destination = null, destinationTimer, frame;
@@ -585,4 +587,4 @@
   });
 })();
 </script>
-<script src="store-config.js"></script><script src="store.js"></script><script src="https://checkout.razorpay.com/v1/checkout.js" defer></script></body></html>
+<script src="store-config.js?v=8eaa7be3"></script><script src="store.js?v=e27d4b76"></script><script src="https://checkout.razorpay.com/v1/checkout.js" defer></script></body></html>

@@ -1,4 +1,5 @@
 """Build both self-contained pages: python build-site.py (no dependencies)."""
+import hashlib
 import json
 from pathlib import Path
 from html import escape
@@ -10,6 +11,11 @@ CSS = (ROOT / 'site.css').read_text(encoding='utf-8')
 # Live ordering styles (order page, basket, tracking). Kept in their own file for clarity.
 STORE_CSS = (ROOT / 'store.css').read_text(encoding='utf-8')
 JS = (ROOT / 'site.js').read_text(encoding='utf-8')
+# store.js and store-config.js load as separate files, so a browser that already has them would
+# keep serving the old copy. Stamping the contents into the URL retires it.
+stamp = lambda name: hashlib.sha1((ROOT / name).read_bytes()).hexdigest()[:8]
+STORE_JS_SRC = f'store.js?v={stamp("store.js")}'
+STORE_CONFIG_SRC = f'store-config.js?v={stamp("store-config.js")}'
 CATEGORIES = {'all': 'Everything', 'bowls': 'Chicken bowls', 'veg': 'Vegetarian bowls', 'two': 'Meals for two', 'sides': 'Sides', 'drinks': 'Drinks', 'dessert': 'Dessert'}
 MARK = '<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 23h38c-1 12-8 19-19 19S6 35 5 23Z" fill="currentColor"/><path d="M3 23h42M18 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M15 16c-6-5 6-6 0-11M24 16c-6-5 6-6 0-11M33 16c-6-5 6-6 0-11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>'
 
@@ -119,12 +125,12 @@ def page(title, description, body, menu=False, extra_scripts='', nav=None):
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%23b93828' d='M3 15h34c-1 13-8 21-17 21S4 28 3 15Z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://images.pexels.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<style>{CSS}{STORE_CSS}</style></head><body id="top"{' class="menu-page"' if menu else ''}>
+<style>{CSS}{STORE_CSS}</style></head><body id="top" data-page="{nav or ('menu' if menu else 'home')}"{' class="menu-page"' if menu else ''}>
 {intro(menu)}<div id="site-content"><script>{INTRO_BOOT}</script>
 {header(nav or ('menu' if menu else 'home'))}<noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
 {body}{footer()}{bag()}</div>
 <script type="application/json" id="menu-data">{data}</script><script>{JS}</script>
-<script src="store-config.js"></script><script src="store.js"></script>{extra_scripts}</body></html>
+<script src="{STORE_CONFIG_SRC}"></script><script src="{STORE_JS_SRC}"></script>{extra_scripts}</body></html>
 '''
 
 
@@ -181,7 +187,7 @@ order_body = '''<main id="main" class="shell" data-order-page>
   <div class="order-shell">
     <div data-order-menu><p class="muted">Loading today\u2019s menu\u2026</p></div>
     <aside class="order-side">
-      <div class="order-card">
+      <div class="order-card" id="your-order">
         <h2>Your order <span class="bag-count" data-basket-count>0</span></h2>
         <div data-order-basket></div>
       </div>

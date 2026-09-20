@@ -94,8 +94,6 @@
       addToBasket(product, [], Math.min(qty, 99));
       carried += qty;
     });
-    // The bag badge in the site header reads the old key, so clear it too.
-    els('.bag-count:not([data-basket-count])').forEach((n) => { n.textContent = '0'; });
     return { carried, missed };
   }
 
@@ -187,8 +185,24 @@
     // Whatever they picked while browsing is already their order — don't make them choose again.
     const carried = carryBrowsingBag(products);
 
-    // This page has its own basket, so the site's bag button would be a second, stale one.
-    els('.bag-button, .order-cta').forEach((n) => { n.hidden = true; });
+    // The header's "Order online" button would link to this very page; make it say how the
+    // kitchen is doing and jump to the basket instead.
+    els('.order-cta').forEach((cta) => {
+      cta.textContent = canOrder ? 'Your order' : outlet.open ? 'Ordering paused' : 'Closed right now';
+      if (!canOrder) cta.classList.add('is-closed');
+      cta.setAttribute('href', '#your-order');
+    });
+
+    // The header keeps its bag button, but here it belongs to the live basket: re-created to
+    // drop the browsing page's handler, then pointed at the order card.
+    els('.bag-button').forEach((button) => {
+      const fresh = button.cloneNode(true);
+      button.replaceWith(fresh);
+      fresh.removeAttribute('aria-haspopup');
+      fresh.addEventListener('click', () => {
+        el('.order-side', root)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
 
     menuHost.innerHTML = menu.categories.map((cat) => `
       <section class="order-group" id="cat-${cat.id}">
@@ -281,7 +295,7 @@
           <p class="tax-note">Taxes are added on the final bill.</p>
           ${minimum && food < minimum ? `<p class="min-note">Minimum order ${money(minimum)} — add ${money(minimum - food)} more.</p>` : ''}`;
 
-      els('[data-basket-count]').forEach((n) => (n.textContent = String(basketCount())));
+      els('.bag-count, [data-basket-count]').forEach((n) => (n.textContent = String(basketCount())));
       const submit = el('[data-submit]', root);
       if (submit) submit.disabled = !canOrder || lines.length === 0 || (minimum && food < minimum);
     }
@@ -383,9 +397,6 @@
     const root = el('[data-track-page]');
     if (!root || root.dataset.ready) return;
     root.dataset.ready = '1';
-
-    // The bag belongs to the browsing pages; on a live order it would only be confusing.
-    els('.bag-button').forEach((n) => { n.hidden = true; });
 
     const params = new URLSearchParams(location.search);
     let token = params.get('token');
