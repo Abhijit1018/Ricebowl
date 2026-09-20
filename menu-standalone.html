@@ -30,6 +30,81 @@
 @keyframes bag-enter{from{opacity:.6;transform:translateX(38px)}to{opacity:1;transform:none}}@keyframes bag-exit{from{opacity:1;transform:none}to{opacity:0;transform:translateX(24px)}}@keyframes backdrop-enter{from{background:#10263600}to{background:#10263680}}@keyframes backdrop-exit{from{background:#10263680}to{background:#10263600}}@keyframes toast-enter{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 @media(hover:hover) and (pointer:fine){.btn:hover{transform:translateY(-2px);box-shadow:0 5px 12px #92291c20}.btn:active{transform:translateY(0) scale(.97)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page-loader{display:none!important}.intro-pending .hero-copy>*,.intro-pending .hero-image,.intro-pending .menu-intro>*{opacity:1}.btn:hover,.product-photo:hover img{transform:none}*,*:before,*:after{transition:none!important;animation:none!important}}
+/* Live ordering: order page, basket, checkout and order tracking. Uses the site tokens. */
+.order-shell{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,.85fr);gap:44px;padding-block:36px 72px;align-items:start}
+.order-head{padding-block:34px 10px}.order-head h1{font-size:72px;color:var(--red)}.order-head p{color:var(--muted);margin-top:12px;max-width:520px}
+.order-status{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700}
+.badge:before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+.badge.open{background:#e7f1ea;color:var(--green)}.badge.closed{background:#fae6e3;color:var(--red)}
+.order-nav{display:flex;gap:8px;overflow-x:auto;padding-block:14px;border-block:1px solid var(--line);margin-bottom:26px;position:sticky;top:88px;background:var(--paper);z-index:12}
+.order-nav a{padding:9px 14px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.order-nav a:hover{border-color:var(--ink)}
+.order-group{margin-bottom:40px;scroll-margin-top:170px}.order-group h2{font-size:34px;margin-bottom:18px}
+.order-items{display:grid;gap:16px}
+.order-item{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.order-item img{width:120px;height:110px;border-radius:10px;background:var(--pale)}
+.order-item.sold-out{opacity:.55}
+.order-item-body{display:flex;flex-direction:column;gap:6px}
+.order-item h3{font-size:19px}.order-item p{font-size:13px;color:var(--muted)}
+.order-item-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}
+.order-item-foot strong{font-size:17px}
+.btn.small{min-height:42px;padding:10px 16px;font-size:13px}
+.sold-tag{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em}
+.stock-note{font-size:12px;color:var(--red);font-weight:600}
+.order-side{position:sticky;top:110px;display:grid;gap:18px}
+.order-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.order-card h2{font-family:inherit;font-size:16px;font-weight:700;letter-spacing:0;margin-bottom:14px}
+.basket-empty{color:var(--muted);font-size:14px}
+.basket-lines{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.basket-lines li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;font-size:14px}
+.basket-lines strong{font-size:14px}
+.addon-note{display:block;font-size:12px;color:var(--muted)}
+.line-price{display:block;font-size:12px;color:var(--muted)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:34px;height:34px;border:1px solid var(--line);background:var(--white);border-radius:6px;font-size:17px;line-height:1}
+.qty span{min-width:18px;text-align:center;font-weight:700}
+.basket-totals{margin:16px 0 0;display:grid;gap:7px;font-size:14px}
+.basket-totals div{display:flex;justify-content:space-between;gap:12px}
+.basket-totals dt,.basket-totals dd{margin:0}.basket-totals .grand{border-top:1px solid var(--line);padding-top:9px;font-weight:700;font-size:16px}
+.tax-note,.min-note{font-size:12px;color:var(--muted);margin-top:8px}.min-note{color:var(--red);font-weight:600}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;font-weight:600}
+.field input,.field textarea,.field select{border:1px solid #aab7b5;border-radius:8px;padding:12px;background:var(--white);min-height:46px;width:100%}
+.field input:focus,.field textarea:focus{outline:2px solid #2869af;outline-offset:2px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:10px 15px;font-size:13px;font-weight:600;cursor:pointer}
+.choice-pill:has(input:checked){background:var(--ink);color:var(--white);border-color:var(--ink)}
+.choice-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.order-submit{width:100%}
+.order-error{padding:40px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.addon-dialog{border:0;border-radius:14px;padding:0;width:min(420px,calc(100% - 32px));background:var(--paper);color:var(--ink)}
+.addon-dialog::backdrop{background:#10263680}
+.addon-inner{padding:24px;display:grid;gap:14px}
+.addon-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px;cursor:pointer}
+.addon-row strong{margin-left:auto}
+.addon-row:has(input:checked){border-color:var(--red);background:#fdf1ef}
+.addon-actions{display:flex;gap:10px}.addon-actions .btn{flex:1}
+.track-wrap{padding-block:40px 80px;display:grid;place-items:start center}
+.track-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:30px;width:min(560px,100%)}
+.track-token{font-size:13px;color:var(--muted);margin-bottom:6px}
+.track-card h1{font-size:44px;color:var(--red);margin-bottom:18px}
+.track-steps{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:12px}
+.track-steps li{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+.track-steps .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);flex-shrink:0}
+.track-steps li.done{color:var(--ink)}.track-steps li.done .dot{background:var(--green);border-color:var(--green)}
+.track-steps li.current{color:var(--ink);font-weight:700}.track-steps li.current .dot{background:var(--red);border-color:var(--red);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #b9382855}50%{box-shadow:0 0 0 7px #b9382800}}
+.track-items{list-style:none;margin:0 0 14px;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:8px;font-size:14px}
+.track-items li{display:flex;justify-content:space-between;gap:14px}.track-items em{color:var(--muted);font-style:normal;font-size:12px}
+.track-reason{background:#fae6e3;border-radius:10px;padding:14px;font-size:14px;margin-bottom:16px}
+.pay-state{font-size:13px;font-weight:600;color:var(--green);margin-top:12px}
+.track-help{font-size:13px;color:var(--muted);margin-top:10px}
+.track-actions{display:flex;align-items:center;gap:16px;margin-top:22px;flex-wrap:wrap}
+.toast.is-error{background:var(--red)}
+.order-cta.is-closed{opacity:.6;pointer-events:none}
+@media(max-width:1000px){.order-shell{grid-template-columns:1fr;gap:26px}.order-side{position:static}}
+@media(max-width:640px){.order-head h1{font-size:56px}.order-item{grid-template-columns:96px minmax(0,1fr);gap:12px}.order-item img{width:96px;height:96px}.order-nav{top:70px}.order-group{scroll-margin-top:150px}.track-card{padding:22px}.track-card h1{font-size:36px}.field-row{grid-template-columns:1fr}}
 </style></head><body id="top" class="menu-page">
 <div class="page-loader" id="page-loader" hidden>
       <div class="loader-lockup"><svg class="loader-bowl" viewBox="0 0 220 190" fill="none" aria-hidden="true">
@@ -73,10 +148,11 @@
 <a class="skip" href="#main">Skip to content</a>
     <header class="site-header"><div class="shell header-inner">
       <a class="brand" href="index-standalone.html" aria-label="Rice Bowl home"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 23h38c-1 12-8 19-19 19S6 35 5 23Z" fill="currentColor"/><path d="M3 23h42M18 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M15 16c-6-5 6-6 0-11M24 16c-6-5 6-6 0-11M33 16c-6-5 6-6 0-11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span>rice bowl</span></a>
-      <nav class="desktop-nav" aria-label="Main navigation"><a href="index-standalone.html" data-nav="home">Home</a><a href="menu-standalone.html" data-nav="menu" aria-current=page>The menu</a><a href="index-standalone.html#story" data-nav="story">Our food</a><a href="index-standalone.html#faq" data-nav="faq">Good to know</a></nav>
+      <nav class="desktop-nav" aria-label="Main navigation"><a href="index-standalone.html" data-nav="home">Home</a><a href="menu-standalone.html" data-nav="menu" aria-current=page>The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="index-standalone.html#story" data-nav="story">Our food</a><a href="index-standalone.html#faq" data-nav="faq">Good to know</a></nav>
+      <a class="btn small order-cta" href="order-standalone.html" data-order-cta>Order online</a>
       <button class="bag-button" type="button" data-open-bag aria-haspopup="dialog">Bag <span class="bag-count">0</span></button>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Toggle navigation">Menu</button>
-      <nav class="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" hidden><a href="index-standalone.html" data-nav="home">Home</a><a href="menu-standalone.html" data-nav="menu" aria-current=page>The menu</a><a href="index-standalone.html#story" data-nav="story">Our food</a><a href="index-standalone.html#faq" data-nav="faq">Good to know</a></nav>
+      <nav class="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" hidden><a href="index-standalone.html" data-nav="home">Home</a><a href="menu-standalone.html" data-nav="menu" aria-current=page>The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="index-standalone.html#story" data-nav="story">Our food</a><a href="index-standalone.html#faq" data-nav="faq">Good to know</a></nav>
     </div></header><noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
 <main id="main" class="shell">
   <section class="menu-intro" aria-labelledby="menu-title"><div><h1 id="menu-title">Let’s eat.</h1><p>Find a bowl, add a side, pick a drink.<br>Your bag keeps everything in one place.</p></div><label class="search-box" for="menu-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg><span class="sr-only">Search the menu</span><input id="menu-search" type="search" placeholder="Search dishes or ingredients" maxlength="120" autocomplete="off" aria-controls="menu-results"><button class="clear-search" type="button" aria-label="Clear search" hidden>×</button></label></section>
@@ -167,7 +243,7 @@
       <div class="bag-head"><h2 id="bag-title">Your bag</h2><button class="icon-button" type="button" data-close-bag aria-label="Close bag">×</button></div>
       <div class="bag-content"><div class="bag-empty"><h3>What looks good?</h3><p>Add a bowl or a side to start your list.</p><button class="btn" type="button" data-close-bag>Keep browsing</button></div><div class="bag-items"></div>
       <div class="saved-summary" hidden><label for="bag-summary" id="summary-label">Your saved selection</label><textarea id="bag-summary" readonly></textarea></div></div>
-      <div class="bag-footer" hidden><div class="subtotal"><span>Subtotal</span><strong class="bag-total">₹0</strong></div><button class="btn" type="button" data-copy-bag>Copy your selection</button><button class="text-link" type="button" data-download-bag>Download as a text file</button><p class="bag-notice">Online ordering is not available yet. This bag is a saved list, not a placed order.</p></div>
+      <div class="bag-footer" hidden><div class="subtotal"><span>Subtotal</span><strong class="bag-total">₹0</strong></div><a class="btn" href="order-standalone.html">Order these online</a><button class="btn secondary" type="button" data-copy-bag>Copy your selection</button><button class="text-link" type="button" data-download-bag>Download as a text file</button><p class="bag-notice">Prices and availability come live from the kitchen. Continue on the order page to place it.</p></div>
       <p class="sr-only bag-status" role="status" aria-live="polite"></p>
     </div></dialog>
     <button class="floating-bag" type="button" data-open-bag aria-haspopup="dialog" hidden><span>View your bag</span><strong class="floating-total"></strong></button>
@@ -540,4 +616,5 @@
     if(img.complete && !img.naturalWidth) fallback();
   });
 })();
-</script></body></html>
+</script>
+<script src="store-config.js"></script><script src="store.js"></script></body></html>
