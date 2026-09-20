@@ -7,6 +7,8 @@ ROOT = Path(__file__).resolve().parent
 DATA = json.loads((ROOT / 'menu-data.json').read_text(encoding='utf-8'))
 ITEMS = {item['id']: item for item in DATA}
 CSS = (ROOT / 'site.css').read_text(encoding='utf-8')
+# Live ordering styles (order page, basket, tracking). Kept in their own file for clarity.
+STORE_CSS = (ROOT / 'store.css').read_text(encoding='utf-8')
 JS = (ROOT / 'site.js').read_text(encoding='utf-8')
 CATEGORIES = {'all': 'Everything', 'bowls': 'Chicken bowls', 'veg': 'Vegetarian bowls', 'two': 'Meals for two', 'sides': 'Sides', 'drinks': 'Drinks', 'dessert': 'Dessert'}
 MARK = '<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 23h38c-1 12-8 19-19 19S6 35 5 23Z" fill="currentColor"/><path d="M3 23h42M18 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M15 16c-6-5 6-6 0-11M24 16c-6-5 6-6 0-11M33 16c-6-5 6-6 0-11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>'
@@ -30,11 +32,12 @@ def product(item):
 def header(menu=False):
     home = 'index-standalone.html'
     section_page = home if menu else ''
-    links = f'<a href="{home if menu else "#top"}" data-nav="home"{ " aria-current=page" if not menu else ""}>Home</a><a href="menu-standalone.html" data-nav="menu"{ " aria-current=page" if menu else ""}>The menu</a><a href="{section_page}#story" data-nav="story">Our food</a><a href="{section_page}#faq" data-nav="faq">Good to know</a>'
+    links = f'<a href="{home if menu else "#top"}" data-nav="home"{ " aria-current=page" if not menu else ""}>Home</a><a href="menu-standalone.html" data-nav="menu"{ " aria-current=page" if menu else ""}>The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="{section_page}#story" data-nav="story">Our food</a><a href="{section_page}#faq" data-nav="faq">Good to know</a>'
     return f'''<a class="skip" href="#main">Skip to content</a>
     <header class="site-header"><div class="shell header-inner">
       <a class="brand" href="{home}" aria-label="Rice Bowl home">{MARK}<span>rice bowl</span></a>
       <nav class="desktop-nav" aria-label="Main navigation">{links}</nav>
+      <a class="btn small order-cta" href="order-standalone.html" data-order-cta>Order online</a>
       <button class="bag-button" type="button" data-open-bag aria-haspopup="dialog">Bag <span class="bag-count">0</span></button>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Toggle navigation">Menu</button>
       <nav class="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" hidden>{links}</nav>
@@ -53,7 +56,7 @@ def bag():
       <div class="bag-head"><h2 id="bag-title">Your bag</h2><button class="icon-button" type="button" data-close-bag aria-label="Close bag">×</button></div>
       <div class="bag-content"><div class="bag-empty"><h3>What looks good?</h3><p>Add a bowl or a side to start your list.</p><button class="btn" type="button" data-close-bag>Keep browsing</button></div><div class="bag-items"></div>
       <div class="saved-summary" hidden><label for="bag-summary" id="summary-label">Your saved selection</label><textarea id="bag-summary" readonly></textarea></div></div>
-      <div class="bag-footer" hidden><div class="subtotal"><span>Subtotal</span><strong class="bag-total">₹0</strong></div><button class="btn" type="button" data-copy-bag>Copy your selection</button><button class="text-link" type="button" data-download-bag>Download as a text file</button><p class="bag-notice">Online ordering is not available yet. This bag is a saved list, not a placed order.</p></div>
+      <div class="bag-footer" hidden><div class="subtotal"><span>Subtotal</span><strong class="bag-total">₹0</strong></div><a class="btn" href="order-standalone.html">Order these online</a><button class="btn secondary" type="button" data-copy-bag>Copy your selection</button><button class="text-link" type="button" data-download-bag>Download as a text file</button><p class="bag-notice">Prices and availability come live from the kitchen. Continue on the order page to place it.</p></div>
       <p class="sr-only bag-status" role="status" aria-live="polite"></p>
     </div></dialog>
     <button class="floating-bag" type="button" data-open-bag aria-haspopup="dialog" hidden><span>View your bag</span><strong class="floating-total"></strong></button>
@@ -105,7 +108,7 @@ INTRO_BOOT = r'''(() => {
 })();'''
 
 
-def page(title, description, body, menu=False):
+def page(title, description, body, menu=False, extra_scripts=''):
     data = json.dumps(DATA, ensure_ascii=False).replace('<', '\\u003c')
     return f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f5">
@@ -113,11 +116,12 @@ def page(title, description, body, menu=False):
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%23b93828' d='M3 15h34c-1 13-8 21-17 21S4 28 3 15Z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://images.pexels.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<style>{CSS}</style></head><body id="top"{' class="menu-page"' if menu else ''}>
+<style>{CSS}{STORE_CSS}</style></head><body id="top"{' class="menu-page"' if menu else ''}>
 {intro(menu)}<div id="site-content"><script>{INTRO_BOOT}</script>
 {header(menu)}<noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
 {body}{footer()}{bag()}</div>
-<script type="application/json" id="menu-data">{data}</script><script>{JS}</script></body></html>
+<script type="application/json" id="menu-data">{data}</script><script>{JS}</script>
+<script src="store-config.js"></script><script src="store.js"></script>{extra_scripts}</body></html>
 '''
 
 
@@ -143,7 +147,7 @@ home_body = f'''<main id="main">
     <div class="faq-list"><details><summary>What are the vegetarian options?</summary><p>Garden Miso, Paneer Pepper and Rajma Comfort are in the vegetarian bowls section. The Green Duo includes two vegetarian bowls, sesame fries and two coolers.</p></details>
     <details><summary>Which bowls have a chilli kick?</summary><p>Firecracker Chicken, Korean Chilli, Pepper Wok and Paneer Pepper include chilli. Use the “With chilli” filter to find them.</p></details>
     <details><summary>Where can I check ingredients and allergens?</summary><p>Each dish has an ingredient description. These are not complete allergen lists. Before ordering, check with the restaurant about allergies and preparation. The menu includes ingredients such as sesame, soy, dairy and egg.</p></details>
-    <details><summary>Can I order from this website?</summary><p>You can explore the menu, add dishes to your bag and copy or download your selection. Online payment and order submission are not available yet. Adding to your bag does not place an order.</p></details>
+    <details><summary>Can I order from this website?</summary><p>Yes. Build your bag, then open <a href="order-standalone.html">Order online</a> to send it to our kitchen for pickup or delivery. Pay online or at the counter, and follow the live wait time once the kitchen confirms.</p></details>
     <details><summary>Will my bag still be here when I come back?</summary><p>Your selection is saved in this browser when browser storage is available. You can change quantities or remove dishes at any time. Clearing your browser data also clears the bag.</p></details></div>
   </section>
 </main>'''
@@ -163,7 +167,73 @@ menu_body = f'''<main id="main" class="shell">
 (ROOT / 'index-standalone.html').write_text(page('Rice Bowl | Bowls, sides & something cold', 'Chicken, paneer, vegetables and rajma rice bowls. Explore the Rice Bowl menu, find your favourites and save your selection.', home_body), encoding='utf-8')
 (ROOT / 'menu-standalone.html').write_text(page('The menu | Rice Bowl', 'Browse rice bowls from ₹219, meals for two, sides, drinks and dessert. Search ingredients and save your favourites in a bag.', menu_body, True), encoding='utf-8')
 
-for filename, target in [('index.html', 'index-standalone.html'), ('menu.html', 'menu-standalone.html')]:
+
+order_body = '''<main id="main" class="shell" data-order-page>
+  <section class="order-head">
+    <h1>Order online.</h1>
+    <p>Straight to our kitchen. Pick it up at the counter or have it delivered, and follow it live once it is in.</p>
+    <div class="order-status" data-order-status></div>
+  </section>
+  <nav class="order-nav" aria-label="Menu sections" data-order-nav></nav>
+  <div class="order-shell">
+    <div data-order-menu><p class="muted">Loading today\u2019s menu\u2026</p></div>
+    <aside class="order-side">
+      <div class="order-card">
+        <h2>Your order <span class="bag-count" data-basket-count>0</span></h2>
+        <div data-order-basket></div>
+      </div>
+      <form class="order-card" data-order-form>
+        <h2>Where should it go?</h2>
+        <div class="choice-row" data-fulfilment></div>
+        <div class="field" data-address-field hidden>
+          <label for="deliveryAddress">Delivery address</label>
+          <textarea id="deliveryAddress" name="deliveryAddress" rows="3" placeholder="Flat, street, landmark, pin code"></textarea>
+        </div>
+        <div class="field"><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
+        <div class="field-row">
+          <div class="field"><label for="phone">Mobile</label><input id="phone" name="phone" required inputmode="tel" autocomplete="tel" placeholder="10-digit number"></div>
+          <div class="field"><label for="email">Email (optional)</label><input id="email" name="email" type="email" autocomplete="email"></div>
+        </div>
+        <div class="field"><label for="couponCode">Coupon (optional)</label><input id="couponCode" name="couponCode" placeholder="e.g. BOWL10"></div>
+        <h2>How would you like to pay?</h2>
+        <div class="choice-row">
+          <label class="choice-pill"><input type="radio" name="paymentMode" value="COUNTER" checked> Pay at the counter</label>
+          <label class="choice-pill"><input type="radio" name="paymentMode" value="ONLINE"> Pay now (UPI/card)</label>
+        </div>
+        <button class="btn order-submit" type="submit" data-submit disabled>Place order</button>
+        <p class="tax-note">We confirm every order from the kitchen before cooking. You will see a live wait time next.</p>
+      </form>
+    </aside>
+  </div>
+  <dialog class="addon-dialog" data-addon-dialog>
+    <div class="addon-inner">
+      <h2 data-addon-title>Extras</h2>
+      <div data-addon-list></div>
+      <div class="addon-actions">
+        <button class="btn secondary" type="button" onclick="this.closest('dialog').close()">Cancel</button>
+        <button class="btn" type="button" data-addon-confirm>Add</button>
+      </div>
+    </div>
+  </dialog>
+</main>'''
+
+track_body = '''<main id="main" class="shell track-wrap" data-track-page>
+  <p class="muted">Loading your order\u2026</p>
+</main>'''
+
+(ROOT / 'order-standalone.html').write_text(page(
+    'Order online | Rice Bowl',
+    'Order Rice Bowl online for pickup or delivery. Live menu, live prices and a live wait time once the kitchen confirms.',
+    order_body,
+    extra_scripts='<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>',
+), encoding='utf-8')
+(ROOT / 'track-standalone.html').write_text(page(
+    'Your order | Rice Bowl',
+    'Follow your Rice Bowl order: confirmation, cooking and ready for pickup.',
+    track_body,
+), encoding='utf-8')
+
+for filename, target in [('index.html', 'index-standalone.html'), ('menu.html', 'menu-standalone.html'), ('order.html', 'order-standalone.html'), ('track.html', 'track-standalone.html')]:
     # JS preserves query and fragment for old bookmarks; the link also works without JS.
     (ROOT / filename).write_text(f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rice Bowl</title><meta name="robots" content="noindex"><script>location.replace('{target}' + location.search + location.hash);</script></head><body><p><a href="{target}">Continue to Rice Bowl</a></p></body></html>''', encoding='utf-8')
-print('Built index-standalone.html, menu-standalone.html and both legacy entry points.')
+print('Built index, menu, order and track pages plus their legacy entry points.')
