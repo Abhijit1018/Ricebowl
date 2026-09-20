@@ -16,6 +16,8 @@
   // The browsing pages keep a simple {dish-slug: qty} bag; the order page carries it over once.
   const LEGACY_BAG_KEY = 'rice-bowl-bag-v1';
   const LAST_ORDER_KEY = 'rice-bowl-last-order';
+  // Orders this browser has placed, newest first, so one can be followed from any page.
+  const MY_ORDERS_KEY = 'rice-bowl-my-orders';
 
   const money = (n) => `${CUR}${Number(n || 0).toFixed(2)}`;
   const el = (sel, root = document) => root.querySelector(sel);
@@ -346,6 +348,7 @@
       try {
         const order = await api(`/public/${OUTLET}/orders`, { method: 'POST', body: JSON.stringify(payload) });
         try { localStorage.setItem(LAST_ORDER_KEY, order.token); } catch {}
+        rememberOrder(order);
         writeBasket([]);
 
         if (payload.paymentMode === 'ONLINE') {
@@ -508,6 +511,95 @@
     flash.timer = setTimeout(() => { toast.hidden = true; }, 3500);
   }
 
+  // ── the order that follows you ───────────────────────────────────────────
+  const readMyOrders = () => {
+    try { return JSON.parse(localStorage.getItem(MY_ORDERS_KEY)) || []; } catch { return []; }
+  };
+  const writeMyOrders = (list) => {
+    try { localStorage.setItem(MY_ORDERS_KEY, JSON.stringify(list.slice(0, 5))); } catch { /* private mode */ }
+  };
+
+  function rememberOrder(order) {
+    const list = readMyOrders().filter((o) => o.token !== order.token);
+    list.unshift({ token: order.token, tokenNo: order.tokenNo, placedAt: Date.now() });
+    writeMyOrders(list);
+  }
+
+  const DONE = ['COMPLETED', 'REJECTED', 'CANCELLED'];
+  const STATUS_WORDS = {
+    PLACED: 'Order received',
+    ACCEPTED: 'Confirmed',
+    PREPARING: 'Cooking',
+    READY: 'Ready for you',
+    COMPLETED: 'Picked up',
+    REJECTED: 'Could not be made',
+  };
+
+  /**
+   * A small button, bottom right, on every page but the tracking page itself: the order this
+   * browser placed, its status, and one tap back to it. It disappears once the order is done and
+   * the customer has had a chance to see so.
+   */
+  async function mountOrderBeacon() {
+    if (el('[data-track-page]')) return;
+    const mine = readMyOrders();
+    if (mine.length === 0) return;
+
+    // A day is long enough for anything still cooking; older entries are history.
+    const DAY = 24 * 60 * 60 * 1000;
+    const fresh = mine.filter((o) => Date.now() - o.placedAt < DAY);
+    if (fresh.length !== mine.length) writeMyOrders(fresh);
+    if (fresh.length === 0) return;
+
+    const node = document.createElement('a');
+    node.className = 'order-beacon';
+    node.hidden = true;
+    document.body.appendChild(node);
+
+    const paint = (order, entry) => {
+      const done = DONE.includes(order.status);
+      // Once it is handed over, stop nagging: the entry is cleared and the button goes.
+      if (done) {
+        writeMyOrders(readMyOrders().filter((o) => o.token !== entry.token));
+        node.remove();
+        return false;
+      }
+      const eta = order.readyEstimateAt ? new Date(order.readyEstimateAt) : null;
+      node.href = `track-standalone.html?token=${encodeURIComponent(entry.token)}`;
+      node.dataset.status = order.status;
+      node.innerHTML = `
+        <span class="beacon-dot" aria-hidden="true"></span>
+        <span class="beacon-text">
+          <strong>${escapeHtml(STATUS_WORDS[order.status] || 'Your order')}</strong>
+          <small>Token #${escapeHtml(String(order.tokenNo ?? entry.tokenNo ?? ''))}${
+            order.status === 'READY' || !eta
+              ? ''
+              : ` · ready ~${eta.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`
+          }</small>
+        </span>`;
+      node.setAttribute('aria-label', `${STATUS_WORDS[order.status] || 'Your order'} — open your order`);
+      node.hidden = false;
+      return true;
+    };
+
+    const entry = fresh[0];
+    const check = async () => {
+      try {
+        const order = await api(`/public/orders/${encodeURIComponent(entry.token)}`);
+        return paint(order, entry);
+      } catch {
+        // Offline, or the order is gone: leave whatever is on screen alone.
+        return true;
+      }
+    };
+
+    if (await check()) {
+      const timer = setInterval(async () => {
+        if (!(await check())) clearInterval(timer);
+      }, 30000);
+    }
+  }
+
   function syncBasketBadges() {
     els('[data-basket-count]').forEach((n) => (n.textContent = String(basketCount())));
   }
@@ -518,6 +610,7 @@
     refreshStaticMenu();
     initOrderPage();
     initTrackPage();
+    mountOrderBeacon();
   });
 
   // Let the existing site.js bag hand over to the live order page.
