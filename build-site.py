@@ -29,10 +29,13 @@ def product(item):
     </article>'''
 
 
-def header(menu=False):
+def header(nav='home'):
+    # `nav` is the page we are on, so only that link is marked current.
     home = 'index-standalone.html'
-    section_page = home if menu else ''
-    links = f'<a href="{home if menu else "#top"}" data-nav="home"{ " aria-current=page" if not menu else ""}>Home</a><a href="menu-standalone.html" data-nav="menu"{ " aria-current=page" if menu else ""}>The menu</a><a href="order-standalone.html" data-nav="order">Order online</a><a href="{section_page}#story" data-nav="story">Our food</a><a href="{section_page}#faq" data-nav="faq">Good to know</a>'
+    on_home = nav == 'home'
+    section_page = '' if on_home else home
+    current = lambda name: ' aria-current="page"' if nav == name else ''
+    links = f'<a href="{"#top" if on_home else home}" data-nav="home"{current("home")}>Home</a><a href="menu-standalone.html" data-nav="menu"{current("menu")}>The menu</a><a href="order-standalone.html" data-nav="order"{current("order")}>Order online</a><a href="{section_page}#story" data-nav="story">Our food</a><a href="{section_page}#faq" data-nav="faq">Good to know</a>'
     return f'''<a class="skip" href="#main">Skip to content</a>
     <header class="site-header"><div class="shell header-inner">
       <a class="brand" href="{home}" aria-label="Rice Bowl home">{MARK}<span>rice bowl</span></a>
@@ -108,7 +111,7 @@ INTRO_BOOT = r'''(() => {
 })();'''
 
 
-def page(title, description, body, menu=False, extra_scripts=''):
+def page(title, description, body, menu=False, extra_scripts='', nav=None):
     data = json.dumps(DATA, ensure_ascii=False).replace('<', '\\u003c')
     return f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f5">
@@ -118,7 +121,7 @@ def page(title, description, body, menu=False, extra_scripts=''):
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <style>{CSS}{STORE_CSS}</style></head><body id="top"{' class="menu-page"' if menu else ''}>
 {intro(menu)}<div id="site-content"><script>{INTRO_BOOT}</script>
-{header(menu)}<noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
+{header(nav or ('menu' if menu else 'home'))}<noscript><p class="noscript">You can browse the full menu below. Enable JavaScript to search dishes and save a bag.</p></noscript>
 {body}{footer()}{bag()}</div>
 <script type="application/json" id="menu-data">{data}</script><script>{JS}</script>
 <script src="store-config.js"></script><script src="store.js"></script>{extra_scripts}</body></html>
@@ -225,12 +228,14 @@ track_body = '''<main id="main" class="shell track-wrap" data-track-page>
     'Order online | Rice Bowl',
     'Order Rice Bowl online for pickup or delivery. Live menu, live prices and a live wait time once the kitchen confirms.',
     order_body,
+    nav='order',
     extra_scripts='<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>',
 ), encoding='utf-8')
 (ROOT / 'track-standalone.html').write_text(page(
     'Your order | Rice Bowl',
     'Follow your Rice Bowl order: confirmation, cooking and ready for pickup.',
     track_body,
+    nav='order',
 ), encoding='utf-8')
 
 for filename, target in [('index.html', 'index-standalone.html'), ('menu.html', 'menu-standalone.html'), ('order.html', 'order-standalone.html'), ('track.html', 'track-standalone.html')]:

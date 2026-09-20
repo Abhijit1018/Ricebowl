@@ -214,7 +214,9 @@
     document.querySelector('.bag-empty').hidden = count > 0;
     document.querySelector('.bag-footer').hidden = count === 0;
     document.querySelector('.saved-summary').hidden = true;
-    document.querySelector('.bag-notice').textContent = `Online ordering is not available yet. This bag is a ${storageAvailable ? 'saved' : 'temporary'} list, not a placed order.`;
+    document.querySelector('.bag-notice').textContent = storageAvailable
+      ? 'Prices and availability come live from the kitchen. Continue on the order page to place it — your picks come with you.'
+      : 'This browser is not saving your bag, so finish on the order page in this tab.';
     document.querySelectorAll('[data-add]').forEach(button => {
       const item = products.get(button.dataset.add);
       const qty = bag.get(item.id) || 0;
