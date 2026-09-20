@@ -74,14 +74,16 @@
 
   // Keep desktop and mobile navigation aligned with the section being viewed.
   const primaryLinks = [...document.querySelectorAll('[data-nav]')];
+  const thisPage = document.body.dataset.page || (document.body.classList.contains('menu-page') ? 'menu' : 'home');
   function markNavigation(id) {
     primaryLinks.forEach(link => {
-      if(link.dataset.nav === id) link.setAttribute('aria-current', ['home', 'menu'].includes(id) ? 'page' : 'location');
+      if(link.dataset.nav === id) link.setAttribute('aria-current', id === thisPage ? 'page' : 'location');
       else link.removeAttribute('aria-current');
     });
   }
-  if(document.body.classList.contains('menu-page')) {
-    markNavigation('menu');
+  // Only the home page scrolls through sections; elsewhere the page you are on stays marked.
+  if(thisPage !== 'home') {
+    markNavigation(thisPage);
   } else {
     const sections = ['story', 'faq'].map(id => document.getElementById(id));
     let destination = null, destinationTimer, frame;
