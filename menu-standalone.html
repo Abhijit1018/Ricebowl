@@ -106,6 +106,21 @@
 .order-cta.is-closed{opacity:.6;pointer-events:none}
 @media(max-width:1000px){.order-shell{grid-template-columns:1fr;gap:26px}.order-side{position:static}}
 @media(max-width:640px){.order-head h1{font-size:56px}.order-item{grid-template-columns:96px minmax(0,1fr);gap:12px}.order-item img{width:96px;height:96px}.order-nav{top:70px}.order-group{scroll-margin-top:150px}.track-card{padding:22px}.track-card h1{font-size:36px}.field-row{grid-template-columns:1fr}}
+
+.order-beacon{position:fixed;right:18px;bottom:18px;z-index:60;display:flex;align-items:center;gap:10px;
+  padding:11px 16px 11px 13px;border-radius:999px;background:#241f1c;color:#fff;text-decoration:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);font:inherit;max-width:calc(100vw - 36px)}
+.order-beacon:hover{background:#3a302b}
+.order-beacon .beacon-text{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.order-beacon strong{font-size:14px;font-weight:700}
+.order-beacon small{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-beacon .beacon-dot{width:10px;height:10px;border-radius:50%;background:#f0a14b;flex:0 0 auto;
+  animation:beacon-pulse 1.8s ease-in-out infinite}
+.order-beacon[data-status="READY"]{background:#2f6b3f}
+.order-beacon[data-status="READY"] .beacon-dot{background:#9ae6a0;animation:none}
+@keyframes beacon-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+@media (prefers-reduced-motion:reduce){.order-beacon .beacon-dot{animation:none}}
+.has-bag .order-beacon{bottom:84px}
 </style></head><body id="top" data-page="menu" class="menu-page">
 <div class="page-loader" id="page-loader" hidden>
       <div class="loader-lockup"><svg class="loader-bowl" viewBox="0 0 220 190" fill="none" aria-hidden="true">
@@ -622,4 +637,4 @@
   });
 })();
 </script>
-<script src="store-config.js?v=8eaa7be3"></script><script src="store.js?v=e27d4b76"></script></body></html>
+<script src="store-config.js?v=8eaa7be3"></script><script src="store.js?v=0527a1fa"></script></body></html>
